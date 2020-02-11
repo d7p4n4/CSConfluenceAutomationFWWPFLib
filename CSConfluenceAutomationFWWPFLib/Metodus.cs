@@ -78,18 +78,18 @@ namespace CSConfluenceAutomationFWWPFLib
                 }
                 string oldalAzonositoja = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, cim);
 
-                string DATA = "{\"version\":{\"number\":" + verzioSzam + "\"type\":\"page\",\"title\":\"" + cim + "\",\"body\" + " +
+                string DATA = "{\"version\":{\"number\":" + verzioSzam + "},\"title\":\"" + cim + "\",\"type\":\"page\",\"body\"" +
                     ":{\"storage\":{\"value\":\"" + html + "\",\"representation\":\"storage\"}}}";
 
                 System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
-                client.BaseAddress = new System.Uri(URL);
+                client.BaseAddress = new System.Uri(URL + "/" + oldalAzonositoja);
                 byte[] cred = UTF8Encoding.UTF8.GetBytes(felhasznaloNev + ":" + jelszo);
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(cred));
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
                 System.Net.Http.HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
 
-                HttpResponseMessage message = client.PostAsync(URL, content).Result;
+                HttpResponseMessage message = client.PutAsync(URL + "/" + oldalAzonositoja, content).Result;
                 string description = string.Empty;
                 string result = message.Content.ReadAsStringAsync().Result;
                 return result;

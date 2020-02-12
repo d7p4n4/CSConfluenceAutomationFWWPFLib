@@ -89,6 +89,9 @@ namespace CSConfluenceAutomationFWWPFLib
                 {
                     cim = APPSETTINGS_OLDALNEVE;
                 }
+
+                html = html.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("\"", "'");
+
                 string szuloOsztalyAzonosito = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, szuloOsztalyNeve, idHossza);
 
                 string DATA = "{\"type\":\"page\",\"ancestors\":[{\"type\":\"page\",\"id\":" + szuloOsztalyAzonosito +
@@ -123,6 +126,9 @@ namespace CSConfluenceAutomationFWWPFLib
                 {
                     cim = APPSETTINGS_OLDALNEVE;
                 }
+
+                html = html.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("\"", "'");
+
                 string oldalAzonositoja = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, cim, idHossza);
 
                 string DATA = "{\"version\":{\"number\":" + verzioSzam + "},\"title\":\"" + cim + "\",\"type\":\"page\",\"body\"" +

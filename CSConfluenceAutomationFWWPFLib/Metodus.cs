@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -26,6 +27,57 @@ namespace CSConfluenceAutomationFWWPFLib
         {
             idHossza = _idHossza;
         }
+
+        public bool IsPageExists(string URL, string cim, string terAzonosito, string felhasznaloNev, string jelszo)
+        {
+            try
+            {
+
+                string oldalAzonosito = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, cim);
+
+                try
+                {
+                    int oldalAzonositoSzam = Convert.ToInt32(oldalAzonosito);
+                }
+                catch (Exception exception)
+                {
+                    return false;
+                }
+
+                bool eredmeny = false;
+                using (var httpClient = new HttpClient())
+                {
+                    using (var request = new HttpRequestMessage(new HttpMethod("GET"), URL + "/" + oldalAzonosito + "?status=any"))
+                    {
+                        var base64authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes(felhasznaloNev + ":" + jelszo));
+                        request.Headers.TryAddWithoutValidation("Authorization", $"Basic {base64authorization}");
+
+                        //var response = await httpClient.SendAsync(request).Result;
+                        HttpResponseMessage message = httpClient.SendAsync(request).Result;
+                        string description = string.Empty;
+                        string result = message.Content.ReadAsStringAsync().Result;
+                        description = result;
+
+                        Response JSONObj = new Response();
+                        JSONObj = JsonConvert.DeserializeObject<Response>(result);
+                        if (JSONObj.statusCode == null)
+                        {
+                            eredmeny = true;
+                        }
+                    }
+                }
+                return eredmeny;
+            }
+            catch (Exception exception)
+            {
+                _naplo.Error(exception.StackTrace);
+                return false;
+            }
+
+        
+
+    }
+
         public string AddConfluencePage(string cim, string terAzonosito, string szuloOsztalyNeve, string html, string URL, string felhasznaloNev, string jelszo)
         {
             try

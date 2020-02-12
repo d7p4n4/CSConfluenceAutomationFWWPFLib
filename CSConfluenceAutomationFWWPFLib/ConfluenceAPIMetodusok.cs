@@ -11,7 +11,6 @@ namespace CSConfluenceAutomationFWWPFLib
 {
     public class ConfluenceAPIMetodusok
     {
-        public int idHossza;
         
         private static readonly log4net.ILog _naplo = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -20,20 +19,16 @@ namespace CSConfluenceAutomationFWWPFLib
         public string APPSETTINGS_OLDALNEVE = ConfigurationManager.AppSettings["OldalNeve"];
 
         public ConfluenceAPIMetodusok() {
-            idHossza = Convert.ToInt32(ConfigurationManager.AppSettings["IdHossza"]);
+
         }
 
-        public ConfluenceAPIMetodusok(int _idHossza)
-        {
-            idHossza = _idHossza;
-        }
 
-        public bool IsPageExists(string URL, string cim, string terAzonosito, string felhasznaloNev, string jelszo)
+        public bool IsPageExists(string URL, string cim, string terAzonosito, string felhasznaloNev, string jelszo, int idHossza)
         {
             try
             {
 
-                string oldalAzonosito = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, cim);
+                string oldalAzonosito = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, cim, idHossza);
 
                 try
                 {
@@ -78,7 +73,7 @@ namespace CSConfluenceAutomationFWWPFLib
 
     }
 
-        public string AddConfluencePage(string cim, string terAzonosito, string szuloOsztalyNeve, string html, string URL, string felhasznaloNev, string jelszo)
+        public string AddConfluencePage(string cim, string terAzonosito, string szuloOsztalyNeve, string html, string URL, string felhasznaloNev, string jelszo, int idHossza)
         {
             try
             {
@@ -94,7 +89,7 @@ namespace CSConfluenceAutomationFWWPFLib
                 {
                     cim = APPSETTINGS_OLDALNEVE;
                 }
-                string szuloOsztalyAzonosito = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, szuloOsztalyNeve);
+                string szuloOsztalyAzonosito = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, szuloOsztalyNeve, idHossza);
 
                 string DATA = "{\"type\":\"page\",\"ancestors\":[{\"type\":\"page\",\"id\":" + szuloOsztalyAzonosito +
                     "}],\"title\":\"" + cim + "\",\"space\":{\"key\":\"" + terAzonosito + "\"},\"body\":{\"storage\":{\"value\":\""
@@ -120,7 +115,7 @@ namespace CSConfluenceAutomationFWWPFLib
             }
         }
 
-        public string UpdateConfluencePage(string cim, string terAzonosito, string html, string URL, string felhasznaloNev, string jelszo, string verzioSzam)
+        public string UpdateConfluencePage(string cim, string terAzonosito, string html, string URL, string felhasznaloNev, string jelszo, string verzioSzam, int idHossza)
         {
             try
             {
@@ -128,7 +123,7 @@ namespace CSConfluenceAutomationFWWPFLib
                 {
                     cim = APPSETTINGS_OLDALNEVE;
                 }
-                string oldalAzonositoja = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, cim);
+                string oldalAzonositoja = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, cim, idHossza);
 
                 string DATA = "{\"version\":{\"number\":" + verzioSzam + "},\"title\":\"" + cim + "\",\"type\":\"page\",\"body\"" +
                     ":{\"storage\":{\"value\":\"" + html + "\",\"representation\":\"storage\"}}}";
@@ -154,7 +149,7 @@ namespace CSConfluenceAutomationFWWPFLib
         }
 
 
-        public async Task<string> KepFeltoltes(string felhasznaloNev, string jelszo, string terAzonosito, string URL, string oldalNeve, ByteArrayContent kepByteTomb, string fajlNev)
+        public async Task<string> KepFeltoltes(string felhasznaloNev, string jelszo, string terAzonosito, string URL, string oldalNeve, ByteArrayContent kepByteTomb, string fajlNev, int idHossza)
         {
             try
             {
@@ -163,7 +158,7 @@ namespace CSConfluenceAutomationFWWPFLib
                     oldalNeve = APPSETTINGS_OLDALNEVE;
                 }
 
-                string oldalAzonositoja = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, oldalNeve);
+                string oldalAzonositoja = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, oldalNeve, idHossza);
                 using (var httpClient = new HttpClient())
                 {
                     using (var request = new HttpRequestMessage(new HttpMethod("POST"), URL + "/" + oldalAzonositoja + "/child/attachment"))
@@ -190,7 +185,7 @@ namespace CSConfluenceAutomationFWWPFLib
             }
         }
 
-        public string GetOldalIDNevAlapjan(string felhasznaloNev, string jelszo, string terAzonosito, string URL, string oldalNeve)
+        public string GetOldalIDNevAlapjan(string felhasznaloNev, string jelszo, string terAzonosito, string URL, string oldalNeve, int idHossza)
         {
             try
             {

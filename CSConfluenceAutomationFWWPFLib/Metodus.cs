@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CSConfluenceAutomationFWWPFLib
 {
-    public class Metodus
+    public class ConfluenceAPIMetodusok
     {
         public int idHossza;
         
@@ -19,11 +19,11 @@ namespace CSConfluenceAutomationFWWPFLib
         public string APPSETTINGS_SZULOOSZTALYNEVE = ConfigurationManager.AppSettings["SzuloOsztalyNeve"];
         public string APPSETTINGS_OLDALNEVE = ConfigurationManager.AppSettings["OldalNeve"];
 
-        public Metodus() {
+        public ConfluenceAPIMetodusok() {
             idHossza = Convert.ToInt32(ConfigurationManager.AppSettings["IdHossza"]);
         }
 
-        public Metodus(int _idHossza)
+        public ConfluenceAPIMetodusok(int _idHossza)
         {
             idHossza = _idHossza;
         }

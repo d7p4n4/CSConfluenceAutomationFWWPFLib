@@ -68,8 +68,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Metodus.cs" />
-    <Compile Include="Response.cs" />
+    <Compile Include="ConfluenceAPIMetodusok.cs" />
+    <Compile Include="ConfluenceAPIResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

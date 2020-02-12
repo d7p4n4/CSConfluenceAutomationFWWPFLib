@@ -58,8 +58,8 @@ namespace CSConfluenceAutomationFWWPFLib
                         string result = message.Content.ReadAsStringAsync().Result;
                         description = result;
 
-                        Response JSONObj = new Response();
-                        JSONObj = JsonConvert.DeserializeObject<Response>(result);
+                        ConfluenceAPIResponse JSONObj = new ConfluenceAPIResponse();
+                        JSONObj = JsonConvert.DeserializeObject<ConfluenceAPIResponse>(result);
                         if (JSONObj.statusCode == null)
                         {
                             eredmeny = true;

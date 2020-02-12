@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace CSConfluenceAutomationFWWPFLib
 {
 
-    public class Response
+    public class ConfluenceAPIResponse
     {
         public string statusCode { get; set; }
         public string message { get; set; }

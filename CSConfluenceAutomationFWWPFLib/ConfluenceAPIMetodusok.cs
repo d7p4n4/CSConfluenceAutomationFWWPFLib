@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -155,7 +156,7 @@ namespace CSConfluenceAutomationFWWPFLib
         }
 
 
-        public async Task<string> KepFeltoltes(string felhasznaloNev, string jelszo, string terAzonosito, string URL, string oldalNeve, ByteArrayContent kepByteTomb, string fajlNev, int idHossza)
+        public async Task<string> KepFeltoltes(string felhasznaloNev, string jelszo, string terAzonosito, string URL, string oldalNeve, string kepFajlEleresiUtja, string fajlNev, int idHossza)
         {
             try
             {
@@ -163,6 +164,8 @@ namespace CSConfluenceAutomationFWWPFLib
                 {
                     oldalNeve = APPSETTINGS_OLDALNEVE;
                 }
+
+                ByteArrayContent kepByteTomb = new ByteArrayContent(File.ReadAllBytes(kepFajlEleresiUtja));
 
                 string oldalAzonositoja = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, oldalNeve, idHossza);
                 using (var httpClient = new HttpClient())

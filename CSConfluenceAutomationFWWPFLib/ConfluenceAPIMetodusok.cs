@@ -156,7 +156,7 @@ namespace CSConfluenceAutomationFWWPFLib
         }
 
 
-        public async Task<string> KepFeltoltes(string felhasznaloNev, string jelszo, string terAzonosito, string URL, string oldalNeve, string kepFajlEleresiUtja, string fajlNev, int idHossza)
+        public async Task<string> KepFeltoltes(string felhasznaloNev, string jelszo, string terAzonosito, string URL, string oldalNeve, byte[] kepFajlBajtjai, string fajlNev, int idHossza)
         {
             try
             {
@@ -165,7 +165,7 @@ namespace CSConfluenceAutomationFWWPFLib
                     oldalNeve = APPSETTINGS_OLDALNEVE;
                 }
 
-                ByteArrayContent kepByteTomb = new ByteArrayContent(File.ReadAllBytes(kepFajlEleresiUtja));
+                ByteArrayContent kepByteTomb = new ByteArrayContent(kepFajlBajtjai);
 
                 string oldalAzonositoja = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, oldalNeve, idHossza);
                 using (var httpClient = new HttpClient())

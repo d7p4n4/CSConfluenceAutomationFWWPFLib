@@ -26,203 +26,177 @@ namespace CSConfluenceAutomationFWWPFLib
 
         public bool IsPageExists(string URL, string cim, string terAzonosito, string felhasznaloNev, string jelszo, int idHossza)
         {
+
+            string oldalAzonosito = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, cim, idHossza);
+
             try
             {
-
-                string oldalAzonosito = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, cim, idHossza);
-
-                try
-                {
-                    int oldalAzonositoSzam = Convert.ToInt32(oldalAzonosito);
-                }
-                catch (Exception exception)
-                {
-                    return false;
-                }
-
-                bool eredmeny = false;
-                using (var httpClient = new HttpClient())
-                {
-                    using (var request = new HttpRequestMessage(new HttpMethod("GET"), URL + "/" + oldalAzonosito + "?status=any"))
-                    {
-                        var base64authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes(felhasznaloNev + ":" + jelszo));
-                        request.Headers.TryAddWithoutValidation("Authorization", $"Basic {base64authorization}");
-
-                        //var response = await httpClient.SendAsync(request).Result;
-                        HttpResponseMessage message = httpClient.SendAsync(request).Result;
-                        string description = string.Empty;
-                        string result = message.Content.ReadAsStringAsync().Result;
-                        description = result;
-
-                        ConfluenceAPIResponse JSONObj = new ConfluenceAPIResponse();
-                        JSONObj = JsonConvert.DeserializeObject<ConfluenceAPIResponse>(result);
-                        if (JSONObj.statusCode == null)
-                        {
-                            eredmeny = true;
-                        }
-                    }
-                }
-                return eredmeny;
+                int oldalAzonositoSzam = Convert.ToInt32(oldalAzonosito);
             }
             catch (Exception exception)
             {
-                _naplo.Error(exception.StackTrace);
                 return false;
             }
 
-        
+            bool eredmeny = false;
+            using (var httpClient = new HttpClient())
+            {
+                using (var request = new HttpRequestMessage(new HttpMethod("GET"), URL + "/" + oldalAzonosito + "?status=any"))
+                {
+                    var base64authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes(felhasznaloNev + ":" + jelszo));
+                    request.Headers.TryAddWithoutValidation("Authorization", $"Basic {base64authorization}");
 
-    }
+                    //var response = await httpClient.SendAsync(request).Result;
+                    HttpResponseMessage message = httpClient.SendAsync(request).Result;
+                    string description = string.Empty;
+                    string result = message.Content.ReadAsStringAsync().Result;
+                    description = result;
+
+                    ConfluenceAPIResponse JSONObj = new ConfluenceAPIResponse();
+                    JSONObj = JsonConvert.DeserializeObject<ConfluenceAPIResponse>(result);
+                    if (JSONObj.statusCode == null)
+                    {
+                        eredmeny = true;
+                    }
+                }
+            }
+            return eredmeny;
+            
+        }
 
         public string AddConfluencePage(string cim, string terAzonosito, string szuloOsztalyNeve, string html, string URL, string felhasznaloNev, string jelszo, int idHossza)
         {
-            try
+            if (szuloOsztalyNeve.Equals(""))
             {
-                if (szuloOsztalyNeve.Equals(""))
-                {
-                    szuloOsztalyNeve = APPSETTINGS_SZULOOSZTALYNEVE;
-                }
-                if (terAzonosito.Equals(""))
-                {
-                    terAzonosito = APPSETTINGS_TERAZONOSITO;
-                }
-                if (cim.Equals(""))
-                {
-                    cim = APPSETTINGS_OLDALNEVE;
-                }
-
-                html = html.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("\"", "'");
-
-                string szuloOsztalyAzonosito = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, szuloOsztalyNeve, idHossza);
-
-                string DATA = "{\"type\":\"page\",\"ancestors\":[{\"type\":\"page\",\"id\":" + szuloOsztalyAzonosito +
-                    "}],\"title\":\"" + cim + "\",\"space\":{\"key\":\"" + terAzonosito + "\"},\"body\":{\"storage\":{\"value\":\""
-                    + html + "\",\"representation\":\"storage\"}}}";
-
-                System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
-                client.BaseAddress = new System.Uri(URL);
-                byte[] cred = UTF8Encoding.UTF8.GetBytes(felhasznaloNev + ":" + jelszo);
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(cred));
-                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
-                System.Net.Http.HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
-
-                HttpResponseMessage message = client.PostAsync(URL, content).Result;
-                string description = string.Empty;
-                string result = message.Content.ReadAsStringAsync().Result;
-                return result;
+                szuloOsztalyNeve = APPSETTINGS_SZULOOSZTALYNEVE;
             }
-            catch (Exception exception)
+            if (terAzonosito.Equals(""))
             {
-                _naplo.Error(exception.StackTrace);
-                return "";
+                terAzonosito = APPSETTINGS_TERAZONOSITO;
             }
+            if (cim.Equals(""))
+            {
+                cim = APPSETTINGS_OLDALNEVE;
+            }
+
+            html = html.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("\"", "'");
+
+            string szuloOsztalyAzonosito = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, szuloOsztalyNeve, idHossza);
+
+            string DATA = "{\"type\":\"page\",\"ancestors\":[{\"type\":\"page\",\"id\":" + szuloOsztalyAzonosito +
+                "}],\"title\":\"" + cim + "\",\"space\":{\"key\":\"" + terAzonosito + "\"},\"body\":{\"storage\":{\"value\":\""
+                + html + "\",\"representation\":\"storage\"}}}";
+
+            System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+            client.BaseAddress = new System.Uri(URL);
+            byte[] cred = UTF8Encoding.UTF8.GetBytes(felhasznaloNev + ":" + jelszo);
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(cred));
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+            System.Net.Http.HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
+
+            HttpResponseMessage message = client.PostAsync(URL, content).Result;
+            string description = string.Empty;
+            string result = message.Content.ReadAsStringAsync().Result;
+            return result;
+           
         }
 
         public string UpdateConfluencePage(string cim, string terAzonosito, string html, string URL, string felhasznaloNev, string jelszo, string verzioSzam, int idHossza)
         {
-            try
+            if (cim.Equals(""))
             {
-                if (cim.Equals(""))
-                {
-                    cim = APPSETTINGS_OLDALNEVE;
-                }
-
-                html = html.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("\"", "'");
-
-                string oldalAzonositoja = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, cim, idHossza);
-
-                string DATA = "{\"version\":{\"number\":" + verzioSzam + "},\"title\":\"" + cim + "\",\"type\":\"page\",\"body\"" +
-                    ":{\"storage\":{\"value\":\"" + html + "\",\"representation\":\"storage\"}}}";
-
-                System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
-                client.BaseAddress = new System.Uri(URL + "/" + oldalAzonositoja);
-                byte[] cred = UTF8Encoding.UTF8.GetBytes(felhasznaloNev + ":" + jelszo);
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(cred));
-                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
-                System.Net.Http.HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
-
-                HttpResponseMessage message = client.PutAsync(URL + "/" + oldalAzonositoja, content).Result;
-                string description = string.Empty;
-                string result = message.Content.ReadAsStringAsync().Result;
-                return result;
+                cim = APPSETTINGS_OLDALNEVE;
             }
-            catch (Exception exception)
-            {
-                _naplo.Error(exception.StackTrace);
-                return "";
-            }
+
+            html = html.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("\"", "'");
+
+            string oldalAzonositoja = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, cim, idHossza);
+
+            string DATA = "{\"version\":{\"number\":" + verzioSzam + "},\"title\":\"" + cim + "\",\"type\":\"page\",\"body\"" +
+                ":{\"storage\":{\"value\":\"" + html + "\",\"representation\":\"storage\"}}}";
+
+            System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+            client.BaseAddress = new System.Uri(URL + "/" + oldalAzonositoja);
+            byte[] cred = UTF8Encoding.UTF8.GetBytes(felhasznaloNev + ":" + jelszo);
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(cred));
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+            System.Net.Http.HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
+
+            HttpResponseMessage message = client.PutAsync(URL + "/" + oldalAzonositoja, content).Result;
+            string description = string.Empty;
+            string result = message.Content.ReadAsStringAsync().Result;
+            return result;
+            
         }
-
-
+               
         public async Task<string> KepFeltoltes(string felhasznaloNev, string jelszo, string terAzonosito, string URL, string oldalNeve, byte[] kepFajlBajtjai, string fajlNev, int idHossza)
         {
-            try
+            if (oldalNeve.Equals(""))
             {
-                if (oldalNeve.Equals(""))
-                {
-                    oldalNeve = APPSETTINGS_OLDALNEVE;
-                }
-
-                ByteArrayContent kepByteTomb = new ByteArrayContent(kepFajlBajtjai);
-
-                string oldalAzonositoja = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, oldalNeve, idHossza);
-                using (var httpClient = new HttpClient())
-                {
-                    using (var request = new HttpRequestMessage(new HttpMethod("POST"), URL + "/" + oldalAzonositoja + "/child/attachment"))
-                    {
-                        request.Headers.TryAddWithoutValidation("X-Atlassian-Token", "nocheck");
-
-                        var base64authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes(felhasznaloNev + ":" + jelszo));
-                        request.Headers.TryAddWithoutValidation("Authorization", $"Basic {base64authorization}");
-
-                        var multipartContent = new MultipartFormDataContent();
-                        multipartContent.Add(kepByteTomb, "file", fajlNev);
-                        multipartContent.Add(new StringContent("This is my File"), "comment");
-                        request.Content = multipartContent;
-
-                        var response = await httpClient.SendAsync(request);
-                        return response.Content.ReadAsStringAsync().Result;
-                    }
-                }
+                oldalNeve = APPSETTINGS_OLDALNEVE;
             }
-            catch (Exception exception)
+
+            ByteArrayContent kepByteTomb = new ByteArrayContent(kepFajlBajtjai);
+
+            string oldalAzonositoja = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, oldalNeve, idHossza);
+            using (var httpClient = new HttpClient())
             {
-                _naplo.Error(exception.StackTrace);
-                return "";
+                using (var request = new HttpRequestMessage(new HttpMethod("POST"), URL + "/" + oldalAzonositoja + "/child/attachment"))
+                {
+                    request.Headers.TryAddWithoutValidation("X-Atlassian-Token", "nocheck");
+
+                    var base64authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes(felhasznaloNev + ":" + jelszo));
+                    request.Headers.TryAddWithoutValidation("Authorization", $"Basic {base64authorization}");
+
+                    var multipartContent = new MultipartFormDataContent();
+                    multipartContent.Add(kepByteTomb, "file", fajlNev);
+                    multipartContent.Add(new StringContent("This is my File"), "comment");
+                    request.Content = multipartContent;
+
+                    var response = await httpClient.SendAsync(request);
+                    return response.Content.ReadAsStringAsync().Result;
+                }
             }
         }
 
+        public async Task<string> Kepfeltoltes(string felhasznaloNev, string jelszo, string terAzonosito, string URL, string oldalNeve, string kepFajlBase64, string fajlNev, int idHossza)
+        {
+
+            return await KepFeltoltes(
+                felhasznaloNev
+                , jelszo
+                , terAzonosito
+                , URL
+                , oldalNeve
+                , Convert.FromBase64String(kepFajlBase64)
+                , fajlNev
+                , idHossza
+                );
+        }
+        
         public string GetOldalIDNevAlapjan(string felhasznaloNev, string jelszo, string terAzonosito, string URL, string oldalNeve, int idHossza)
         {
-            try
+            string eredmeny = "";
+            using (var httpClient = new HttpClient())
             {
-                string eredmeny = "";
-                using (var httpClient = new HttpClient())
+                using (var request = new HttpRequestMessage(new HttpMethod("GET"), URL + "?title=" + oldalNeve + "&spaceKey=" + terAzonosito + "&expand=history"))
                 {
-                    using (var request = new HttpRequestMessage(new HttpMethod("GET"), URL + "?title=" + oldalNeve + "&spaceKey=" + terAzonosito + "&expand=history"))
-                    {
-                        var base64authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes(felhasznaloNev + ":" + jelszo));
-                        request.Headers.TryAddWithoutValidation("Authorization", $"Basic {base64authorization}");
+                    var base64authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes(felhasznaloNev + ":" + jelszo));
+                    request.Headers.TryAddWithoutValidation("Authorization", $"Basic {base64authorization}");
 
-                        //var response = await httpClient.SendAsync(request).Result;
-                        HttpResponseMessage message = httpClient.SendAsync(request).Result;
-                        string description = string.Empty;
-                        string result = message.Content.ReadAsStringAsync().Result;
-                        description = result;
+                    //var response = await httpClient.SendAsync(request).Result;
+                    HttpResponseMessage message = httpClient.SendAsync(request).Result;
+                    string description = string.Empty;
+                    string result = message.Content.ReadAsStringAsync().Result;
+                    description = result;
 
-                        eredmeny = result.Replace("{\"results\":[{\"id\":\"", "").Substring(0, idHossza);
-                    }
+                    eredmeny = result.Replace("{\"results\":[{\"id\":\"", "").Substring(0, idHossza);
                 }
-                return eredmeny;
             }
-            catch (Exception exception)
-            {
-                _naplo.Error(exception.StackTrace);
-                return "";
-            }
-
+            return eredmeny;
+            
         }
     }
 }

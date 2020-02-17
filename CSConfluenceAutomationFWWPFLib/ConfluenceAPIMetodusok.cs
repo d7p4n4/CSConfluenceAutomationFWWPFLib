@@ -1,10 +1,8 @@
-﻿using Dapplo.Confluence;
+﻿using AddNewPage;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -142,16 +140,16 @@ namespace CSConfluenceAutomationFWWPFLib
 
             if (message.IsSuccessStatusCode)
             {
-                NewPageSuccessResponse JSONObjSuccess = new NewPageSuccessResponse();
-                JSONObjSuccess = JsonConvert.DeserializeObject<NewPageSuccessResponse>(result);
+                AddNewPageSuccessResponse JSONObjSuccess = new AddNewPageSuccessResponse();
+                JSONObjSuccess = JsonConvert.DeserializeObject<AddNewPageSuccessResponse>(result);
 
                 addNewPageResult.SuccessResponse = JSONObjSuccess;
             }
             else 
             { 
 
-                NewPageFailedResponse JSONObjFailed = new NewPageFailedResponse();
-                JSONObjFailed = JsonConvert.DeserializeObject<NewPageFailedResponse>(result);
+                AddNewPageFailedResponse JSONObjFailed = new AddNewPageFailedResponse();
+                JSONObjFailed = JsonConvert.DeserializeObject<AddNewPageFailedResponse>(result);
 
                 addNewPageResult.FailedResponse = JSONObjFailed;
 

@@ -25,7 +25,7 @@ namespace CSConfluenceAutomationFWWPFLib
 
         }
 
-        public static string TransformXMLToHTML(string inputXml, string xsltString)
+        public string TransformXMLToHTML(string inputXml, string xsltString)
         {
             XslCompiledTransform transform = new XslCompiledTransform();
             using (XmlReader reader = XmlReader.Create(new StringReader(xsltString)))
@@ -38,6 +38,28 @@ namespace CSConfluenceAutomationFWWPFLib
                 transform.Transform(reader, null, results);
             }
             return results.ToString();
+        }
+
+        public string DeletePage(string jelszo, string felhasznaloNev, string URL, string oldalNeve, string terAzonosito, int idHossza)
+        {
+
+            string oldalAzonosito = GetOldalIDNevAlapjan(felhasznaloNev, jelszo, terAzonosito, URL, oldalNeve, idHossza);
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), URL + "/" + oldalAzonosito + "?status=current"))
+                {
+                    var base64authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes(felhasznaloNev + ":" + jelszo));
+                    request.Headers.TryAddWithoutValidation("Authorization", $"Basic {base64authorization}");
+
+                    //var response = await httpClient.SendAsync(request).Result;
+                    HttpResponseMessage message = httpClient.SendAsync(request).Result;
+                    string description = string.Empty;
+                    string result = message.Content.ReadAsStringAsync().Result;
+                    description = result;
+                    return result;
+                }
+            }
         }
 
         public bool IsPageExists(string URL, string cim, string terAzonosito, string felhasznaloNev, string jelszo, int idHossza)

@@ -7,6 +7,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Xsl;
 
 namespace CSConfluenceAutomationFWWPFLib
 {
@@ -23,6 +25,20 @@ namespace CSConfluenceAutomationFWWPFLib
 
         }
 
+        public static string TransformXMLToHTML(string inputXml, string xsltString)
+        {
+            XslCompiledTransform transform = new XslCompiledTransform();
+            using (XmlReader reader = XmlReader.Create(new StringReader(xsltString)))
+            {
+                transform.Load(reader);
+            }
+            StringWriter results = new StringWriter();
+            using (XmlReader reader = XmlReader.Create(new StringReader(inputXml)))
+            {
+                transform.Transform(reader, null, results);
+            }
+            return results.ToString();
+        }
 
         public bool IsPageExists(string URL, string cim, string terAzonosito, string felhasznaloNev, string jelszo, int idHossza)
         {

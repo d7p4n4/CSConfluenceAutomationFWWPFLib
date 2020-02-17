@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace CSConfluenceAutomationFWWPFLib
 {
-    public class AddNewPageResult
+    public class ConfluenceAPIRequest
     {
-        public NewPageFailedResponse FailedResponse { get; set; }
-        public NewPageSuccessResponse SuccessResponse { get; set; }
     }
 }

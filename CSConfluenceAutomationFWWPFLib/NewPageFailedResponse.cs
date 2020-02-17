@@ -7,7 +7,7 @@ using Newtonsoft.Json.Converters;
 
 namespace CSConfluenceAutomationFWWPFLib
 {
-    public class NewPageErrorResponse
+    public class NewPageFailedResponse
     {
         [JsonProperty("statusCode")]
         public long StatusCode { get; set; }

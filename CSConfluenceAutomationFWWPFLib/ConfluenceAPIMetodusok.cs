@@ -150,8 +150,8 @@ namespace CSConfluenceAutomationFWWPFLib
             else 
             { 
 
-                NewPageErrorResponse JSONObjFailed = new NewPageErrorResponse();
-                JSONObjFailed = JsonConvert.DeserializeObject<NewPageErrorResponse>(result);
+                NewPageFailedResponse JSONObjFailed = new NewPageFailedResponse();
+                JSONObjFailed = JsonConvert.DeserializeObject<NewPageFailedResponse>(result);
 
                 addNewPageResult.FailedResponse = JSONObjFailed;
 

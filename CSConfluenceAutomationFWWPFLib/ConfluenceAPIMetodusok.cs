@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Dapplo.Confluence;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -102,8 +103,10 @@ namespace CSConfluenceAutomationFWWPFLib
             
         }
 
-        public string AddConfluencePage(string cim, string terAzonosito, string szuloOsztalyNeve, string html, string URL, string felhasznaloNev, string jelszo, int idHossza)
+        public AddNewPageResult AddConfluencePage(string cim, string terAzonosito, string szuloOsztalyNeve, string html, string URL, string felhasznaloNev, string jelszo, int idHossza)
         {
+            AddNewPageResult addNewPageResult = new AddNewPageResult();
+
             if (szuloOsztalyNeve.Equals(""))
             {
                 szuloOsztalyNeve = APPSETTINGS_SZULOOSZTALYNEVE;
@@ -136,7 +139,25 @@ namespace CSConfluenceAutomationFWWPFLib
             HttpResponseMessage message = client.PostAsync(URL, content).Result;
             string description = string.Empty;
             string result = message.Content.ReadAsStringAsync().Result;
-            return result;
+
+            if (message.IsSuccessStatusCode)
+            {
+                NewPageSuccessResponse JSONObjSuccess = new NewPageSuccessResponse();
+                JSONObjSuccess = JsonConvert.DeserializeObject<NewPageSuccessResponse>(result);
+
+                addNewPageResult.SuccessResponse = JSONObjSuccess;
+            }
+            else 
+            { 
+
+                NewPageErrorResponse JSONObjFailed = new NewPageErrorResponse();
+                JSONObjFailed = JsonConvert.DeserializeObject<NewPageErrorResponse>(result);
+
+                addNewPageResult.FailedResponse = JSONObjFailed;
+
+            }
+
+            return addNewPageResult;
            
         }
 
@@ -236,5 +257,6 @@ namespace CSConfluenceAutomationFWWPFLib
             return eredmeny;
             
         }
+
     }
 }
